@@ -62,20 +62,24 @@ public class BasicPlaceService {
         this.basicPlaceRepository.deletePlace(id);
     }
 
-    public void updatePlace(@Valid BasicPlace basicPlace, Long id) {
+    public void updatePlace(@Valid BasicPlace basicPlace, Long id, Principal principal) {
 
         final Optional<BasicPlace> oldBasicPlace = this.basicPlaceRepository.findById(id);
+        final Optional<BasicPerson> actualUser = this.personService.getPersonByUsername(principal.getName());
 
-        if(!oldBasicPlace.isPresent())
-            throw new ResourceNotFoundException(ResourceNotFoundException.DEFAULT_MESSAGE + id);
+        //Address
+        final PlaceAddress oldPlaceAddress = oldBasicPlace.get().getPlaceAddress();
 
-        final PlaceAddress oldPlaceAddres =
+        PlaceAddress newPlaceAddress = basicPlace.getPlaceAddress();
+        newPlaceAddress.setId(oldPlaceAddress.getId());
+        this.placeAddressService.createNewAddress(newPlaceAddress);
 
-        final PlaceAddress placeAddress = basicPlace.getPlaceAddress();
-
-        //address
-        this.placeAddressService.createNewAddress(placeAddress);
         //place
-        basicPlace
+        //+placeComments
+        basicPlace.setPlaceAddress(newPlaceAddress);
+        basicPlace.setId(id);
+        basicPlace.setStatus('A');
+        basicPlace.setBasicPerson(actualUser.get());
+        this.basicPlaceRepository.save(basicPlace);
     }
 }

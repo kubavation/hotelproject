@@ -59,12 +59,13 @@ public class BasicPlaceController {
     }
 
     @PutMapping("/place/{id}")
-    public ResponseEntity<Object> updatePerson(@RequestBody @Valid BasicPlace basicPlace,@PathVariable Long id) {
+    public ResponseEntity<Object> updatePerson(@RequestBody @Valid BasicPlace basicPlace,@PathVariable Long id,
+                                               Principal principal) {
         Optional<BasicPlace> oldPlace = basicPlaceService.getPlaceById(id);
         if(!oldPlace.isPresent())
             throw new ResourceNotFoundException(ResourceNotFoundException.DEFAULT_MESSAGE + id);
 
-        this.basicPlaceService.updatePlace(basicPlace,id);
+        this.basicPlaceService.updatePlace(basicPlace,id,principal);
         return new ResponseEntity<>(basicPlace,new HttpHeaders(),HttpStatus.OK);
     }
 
