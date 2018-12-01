@@ -1,5 +1,6 @@
 package com.duryskuba.hotelproject.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,10 +19,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "BASIC_PLACE")
+@Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
 @NoArgsConstructor
-public class BasicPlace {
+public class BasicPlace {   // todo abstract??
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,18 +34,26 @@ public class BasicPlace {
     private String name;
 
     //@NotNull
+    //@JsonIgnore
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PERSON_ID")
     private BasicPerson basicPerson;
 
-    @Valid
+    //@JsonIgnore         // todo wyrzuc te ignory?
+    //@Valid
     @NotNull
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ADDRESS_ID")
     private PlaceAddress placeAddress;
 
+    //@JsonIgnore
     private Character status;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "basicPlace")
     private List<PlaceComment> placeComments;
+
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "EQUIPMENT_ID")
+//    private Equipment equipment;
 }

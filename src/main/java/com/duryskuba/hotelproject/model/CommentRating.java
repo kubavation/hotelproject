@@ -26,9 +26,9 @@ public class CommentRating {
 //    private BasicPerson basicPerson;
 
     @NotNull
-    private Long rating;
+    private Integer rating;
 
-    @NotNull
+    //@NotNull
     private Character status;
 
 }

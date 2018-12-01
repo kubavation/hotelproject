@@ -17,6 +17,8 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
 
     private PersonRepository personRepository;
 
+    private BasicPerson basicPerson;
+
     public UserDetailsServiceImplementation(final PersonRepository personRepository) {
         this.personRepository = personRepository;
     }
@@ -24,8 +26,15 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<BasicPerson> userOptional = personRepository.findByUsername(username);
+
         if(!userOptional.isPresent())
             throw new UsernameNotFoundException(username);
+
+        this.basicPerson = userOptional.get();
         return new UserPrincipal(userOptional.get());
+    }
+
+    public BasicPerson getLoggedPerson() {
+        return this.basicPerson;
     }
 }

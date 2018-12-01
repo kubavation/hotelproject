@@ -2,6 +2,7 @@ package com.duryskuba.hotelproject.controller;
 
 import com.duryskuba.hotelproject.exception.ResourceNotFoundException;
 import com.duryskuba.hotelproject.model.BasicPerson;
+import com.duryskuba.hotelproject.service.CoordinatesService;
 import com.duryskuba.hotelproject.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -20,13 +21,12 @@ public class PersonController {
     private PersonService personService;
 
 
-
     public PersonController(final PersonService personService) {
         this.personService = personService;
     }
 
     //+ zmien na people?
-    @GetMapping("/persons")
+    @GetMapping("/people")
     public List<BasicPerson> showAllPeople() {
         return personService.showAllActivePeople();
     }
@@ -38,7 +38,7 @@ public class PersonController {
         );
     }
 
-    @PostMapping("/persons")
+    @PostMapping("/people")
     public ResponseEntity<Object> createPerson(@Valid @RequestBody BasicPerson person) {
         this.personService.createNewPerson(person);
         return new ResponseEntity<>(person,new HttpHeaders(),HttpStatus.CREATED);
@@ -60,8 +60,29 @@ public class PersonController {
         return new ResponseEntity<>(person,new HttpHeaders(),HttpStatus.OK);
     }
 
-    @GetMapping("/persons/username/{username}")
-    public List<BasicPerson> getPeopleWhereUsernameLike(@PathVariable String username) {
-        return personService.getPeopleWhereUsernameLike(username);
+//    @GetMapping("/people/username/like/{username}")
+//    public List<BasicPerson> getPeopleWhereUsernameLike(@PathVariable String username) {
+//        return personService.getPeopleWhereUsernameLike(username);
+//    }
+
+      @GetMapping("/people/username/{username}")
+      public boolean ifPersonByUsernameExists(@PathVariable String username) {
+        return this.personService.getPersonByUsername(username).isPresent();
+      }
+
+
+    @GetMapping("/people/email/{email:.+}")
+    public boolean getPersonByEmailExists(@PathVariable String email) {
+        System.out.println(email + "   " + this.personService.getPersonByEmail(email).isPresent());
+        return this.personService.getPersonByEmail(email).isPresent();
     }
+
+
+    @GetMapping("/person/by/username/{username}")
+    public BasicPerson getPersonByUsername(@PathVariable String username) {
+        return this.personService.getPersonByUsername(username)
+                .orElseThrow(ResourceNotFoundException::new);
+    }
+
+
 }

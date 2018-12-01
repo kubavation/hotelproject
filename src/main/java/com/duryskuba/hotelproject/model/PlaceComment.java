@@ -1,5 +1,6 @@
 package com.duryskuba.hotelproject.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,25 +22,27 @@ public class PlaceComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PERSON_ID")
-    @NotNull
+    //@NotNull
+    //@JsonIgnore
     private BasicPerson basicPerson;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER) // ? EAGER ?
     @JoinColumn(name = "PLACE_ID")
-    @NotNull
+    //@NotNull
+   // @JsonIgnore
     private BasicPlace basicPlace;
 
     @NotNull
     @Size(max = 255)
     private String text; // mooze zmiana na BLOB ?
 
-    @NotNull
+    //@NotNull
     @Column(name = "CREATION_DATE")
     private LocalDateTime creationDate;
 
-    @NotNull
+   // @NotNull
     private Character status;
 
 

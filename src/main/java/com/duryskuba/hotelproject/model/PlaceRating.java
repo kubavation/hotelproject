@@ -20,6 +20,6 @@ public class PlaceRating {
     @NotNull
     private Integer rating;
 
-    @NotNull
+    //@NotNull
     private Character status;
 }

@@ -1,15 +1,18 @@
 package com.duryskuba.hotelproject.service;
 
+import com.duryskuba.hotelproject.exception.AuthException;
 import com.duryskuba.hotelproject.exception.ResourceNotFoundException;
 import com.duryskuba.hotelproject.model.BasicPerson;
 import com.duryskuba.hotelproject.model.BasicPlace;
 import com.duryskuba.hotelproject.model.PlaceAddress;
+import com.duryskuba.hotelproject.model.PlaceComment;
 import com.duryskuba.hotelproject.repository.BasicPlaceRepository;
 import com.duryskuba.hotelproject.repository.PlaceAddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.naming.AuthenticationException;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
@@ -19,17 +22,22 @@ import java.util.Optional;
 public class BasicPlaceService {
 
     private BasicPlaceRepository basicPlaceRepository;
-
-    @Autowired
     private PlaceAddressService placeAddressService;
-
-    @Autowired
     private PersonService personService;
+    private PlaceCommentService placeCommentService;
+    private AuthenticationService authenticationService;
 
-    public BasicPlaceService(final BasicPlaceRepository basicPlaceRepository) {
+    public BasicPlaceService(BasicPlaceRepository basicPlaceRepository,
+                             PlaceAddressService placeAddressService,
+                             PersonService personService,
+                             PlaceCommentService placeCommentService,
+                             AuthenticationService authenticationService) {
         this.basicPlaceRepository = basicPlaceRepository;
+        this.placeAddressService = placeAddressService;
+        this.personService = personService;
+        this.placeCommentService = placeCommentService;
+        this.authenticationService = authenticationService;
     }
-
 
     public List<BasicPlace> getAllPlaces() {
         return basicPlaceRepository.findAll();
@@ -40,12 +48,12 @@ public class BasicPlaceService {
     }
 
     @Transactional
-    public void createNewPlace(BasicPlace place, Principal principal) {
-        String username = principal.getName();
-        BasicPerson person = this.personService.getPersonByUsername(username)
-                .orElseThrow(UnsupportedOperationException::new); // zmien na log in exception?)
+    public void createNewPlace(BasicPlace place, BasicPerson person) {//Principal principal) { //?
 
+        //BasicPerson person = this.authenticationService.getCurrentlyLoggedPerson(principal);
+        System.out.println(place == null);
         final PlaceAddress placeAddress = place.getPlaceAddress();
+        System.out.println(placeAddress == null ? "null2" : placeAddress.getCity());
 
         PlaceAddress newPlaceAddress = this.placeAddressService.createAddressFromParameters(placeAddress.getCountry(),
                                         placeAddress.getCity(),placeAddress.getStreet(),placeAddress.getPlaceNumber());
@@ -67,7 +75,6 @@ public class BasicPlaceService {
         final Optional<BasicPlace> oldBasicPlace = this.basicPlaceRepository.findById(id);
         final Optional<BasicPerson> actualUser = this.personService.getPersonByUsername(principal.getName());
 
-        //Address
         final PlaceAddress oldPlaceAddress = oldBasicPlace.get().getPlaceAddress();
 
         PlaceAddress newPlaceAddress = basicPlace.getPlaceAddress();
@@ -75,11 +82,30 @@ public class BasicPlaceService {
         this.placeAddressService.createNewAddress(newPlaceAddress);
 
         //place
-        //+placeComments
+        //todo +placeComments ??3
         basicPlace.setPlaceAddress(newPlaceAddress);
         basicPlace.setId(id);
         basicPlace.setStatus('A');
         basicPlace.setBasicPerson(actualUser.get());
+        basicPlace.setPlaceComments(oldBasicPlace.get().getPlaceComments());
         this.basicPlaceRepository.save(basicPlace);
     }
+
+    @Transactional
+    public void addComment(@Valid PlaceComment comment, BasicPlace basicPlace, BasicPerson person) {
+        this.placeCommentService.createNewComment(comment,basicPlace,person);
+        this.addNewComment(basicPlace,comment);
+        this.personService.addComment(person, comment,
+             this.placeCommentService.getCommentsOfPerson(person.getId()));
+    }
+
+    private void addNewComment(BasicPlace basicPlace, @Valid PlaceComment comment) {
+        List<PlaceComment> comments = basicPlace.getPlaceComments();
+        comments.add(comment);
+        basicPlace.setPlaceComments(comments);
+        this.basicPlaceRepository.save(basicPlace);
+    }
+
+
+
 }

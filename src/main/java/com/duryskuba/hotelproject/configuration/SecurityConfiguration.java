@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -40,8 +41,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
+                .logout()
+                .logoutRequestMatcher(new AntPathRequestMatcher("/hotelproject/logout"))
+                .deleteCookies("JSESSIONID")
+                .invalidateHttpSession(true)
+                .permitAll()
+                .clearAuthentication(true)
+                .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/places").authenticated()
+                .antMatchers("/hotelproject/user").permitAll()
+                .antMatchers(HttpMethod.POST,"/hotelproject/places").authenticated()
+                .antMatchers(HttpMethod.POST,"/hotelproject/places/*/comments/**").authenticated()
                 //.antMatchers(HttpMethod.POST,"/places").authenticated()
                 .antMatchers("/**").permitAll()
                 .and()
@@ -61,4 +71,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         authenticationProvider.setPasswordEncoder(passwordEncoder);
         return authenticationProvider;
     }
+
+
 }

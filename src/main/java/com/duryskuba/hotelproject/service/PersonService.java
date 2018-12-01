@@ -2,11 +2,14 @@ package com.duryskuba.hotelproject.service;
 
 import com.duryskuba.hotelproject.email.EmailService;
 import com.duryskuba.hotelproject.model.BasicPerson;
+import com.duryskuba.hotelproject.model.PlaceComment;
 import com.duryskuba.hotelproject.repository.PersonRepository;
 import com.duryskuba.hotelproject.repository.RoleRepository;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Basic;
 import javax.validation.Valid;
@@ -22,17 +25,17 @@ public class PersonService {
 
     private PersonRepository personRepository;
     private EmailService emailService;
-
-    // do konstruktora!
-    @Autowired
     private RoleRepository roleRepository;
-
-    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public PersonService(final PersonRepository personRepository, final EmailService emailService) {
+    public PersonService(PersonRepository personRepository,
+                         EmailService emailService,
+                         RoleRepository roleRepository,
+                         BCryptPasswordEncoder passwordEncoder) {
         this.personRepository = personRepository;
         this.emailService = emailService;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public BasicPerson createNewPerson(BasicPerson person) {
@@ -90,4 +93,16 @@ public class PersonService {
     public Optional<BasicPerson> getPersonByUsername(String username) {
         return this.personRepository.findByUsername(username);
     }
+
+
+    public void addComment(BasicPerson person, @Valid PlaceComment comment, List<PlaceComment> comments) {
+        comments.add(comment);
+        person.setPlaceComments(comments);
+        this.personRepository.save(person);
+    }
+
+    public Optional<BasicPerson> getPersonByEmail(String email) {
+        return this.personRepository.findByEmail(email);
+    }
+
 }

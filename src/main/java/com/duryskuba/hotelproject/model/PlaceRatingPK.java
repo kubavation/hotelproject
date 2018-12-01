@@ -16,11 +16,11 @@ import java.util.Objects;
 @NoArgsConstructor
 public class PlaceRatingPK implements Serializable {
 
-    @NotNull
+   // @NotNull
     @Column(name = "PLACE_ID")
     private Long placeId;
 
-    @NotNull
+  //  @NotNull
     @Column(name = "PERSON_ID")
     private Long personId;
 

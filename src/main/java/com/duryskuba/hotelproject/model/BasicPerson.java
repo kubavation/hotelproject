@@ -1,5 +1,6 @@
 package com.duryskuba.hotelproject.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -67,9 +68,11 @@ public class BasicPerson {
 
     private Character confirmed;
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "basicPerson")
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "basicPerson")    //EAGER-dziala
     private List<PlaceComment> placeComments;
 
+    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "user_role",
                joinColumns = @JoinColumn(name = "user_id"),
@@ -77,4 +80,6 @@ public class BasicPerson {
     )
     private Set<Role> roles;
 
+
+    // dodac basicPlace?? jake one to one?
 }
