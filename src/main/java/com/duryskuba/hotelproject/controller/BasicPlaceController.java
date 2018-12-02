@@ -240,18 +240,10 @@ public class BasicPlaceController {
     @PostMapping("place/{placeId}/images")
     public ResponseEntity<Object> addNewImageToPlace(@PathVariable("placeId") Long placeId) {
 
-        // test
-        System.out.println("XD1");
-
         File f = new File("C:\\Users\\durys\\Desktop\\zdj.jpg");
         try {
-            System.out.println("XD2");
-           // this.placeImageService.addNewImage(Files.readAllBytes(f.toPath())
-              //      , this.basicPlaceService.getPlaceById(placeId).get());
-            this.placeImageService.test();
-            Optional<BasicPlace> pp = this.basicPlaceService.getPlaceById(2L);
-            Files.readAllBytes(f.toPath());
-
+            this.placeImageService.addNewImage(Files.readAllBytes(f.toPath())
+                    , this.basicPlaceService.getPlaceById(placeId).get());
         }catch (IOException ex) {
             System.out.println("XD4");
             ex.printStackTrace();
