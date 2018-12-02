@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.Basic;
 import javax.validation.Valid;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +32,7 @@ public class BasicPlaceController {
     private PlaceCommentService placeCommentService;
     private PlaceRatingService placeRatingService;
     private CommentRatingService commentRatingService;
+    private PlaceImageService placeImageService;
 
     @Autowired
     private CoordinatesService coordinatesService;
@@ -39,12 +43,14 @@ public class BasicPlaceController {
     public BasicPlaceController(final BasicPlaceService basicPlaceService,
                                 final PlaceCommentService placeCommentService,
                                 final PlaceRatingService placeRatingService,
-                                final CommentRatingService commentRatingService) {
+                                final CommentRatingService commentRatingService,
+                                final PlaceImageService placeImageService) {
 
         this.basicPlaceService = basicPlaceService;
         this.placeCommentService = placeCommentService;
         this.placeRatingService = placeRatingService;
         this.commentRatingService = commentRatingService;
+        this.placeImageService = placeImageService;
     }
 
 
@@ -229,4 +235,29 @@ public class BasicPlaceController {
 
         return new ResponseEntity<>(commentId,new HttpHeaders(),HttpStatus.OK);
     }
+
+
+    @PostMapping("place/{placeId}/images")
+    public ResponseEntity<Object> addNewImageToPlace(@PathVariable("placeId") Long placeId) {
+
+        // test
+        System.out.println("XD1");
+
+        File f = new File("C:\\Users\\durys\\Desktop\\zdj.jpg");
+        try {
+            System.out.println("XD2");
+           // this.placeImageService.addNewImage(Files.readAllBytes(f.toPath())
+              //      , this.basicPlaceService.getPlaceById(placeId).get());
+            this.placeImageService.test();
+            Optional<BasicPlace> pp = this.basicPlaceService.getPlaceById(2L);
+            Files.readAllBytes(f.toPath());
+
+        }catch (IOException ex) {
+            System.out.println("XD4");
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
+
 }

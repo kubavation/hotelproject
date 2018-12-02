@@ -105,9 +105,9 @@ public class BasicPlaceService {
 
 
     public BasicPlace updateImagesAndSave(BasicPlace place, PlaceImage placeImage) {
-        place.getImages().add(placeImage);
-        this.basicPlaceRepository.save(place);
-        return place;
+//        place.getImages().add(placeImage);
+//        this.basicPlaceRepository.save(place);
+          return place;
     }
 
 

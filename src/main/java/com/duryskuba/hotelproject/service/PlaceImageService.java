@@ -12,6 +12,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -31,10 +33,18 @@ public class PlaceImageService {
     }
 
 
+    public void test() {
+        System.out.println("TEXT");
+    }
+
     @Transactional
     public void addNewImage(byte[] image, final BasicPlace place) {
+
+        System.out.println("XD22");
         PlaceImage placeImage = new PlaceImage();
-        placeImage.setPlace(place);
+        //placeImage.setPlace(place);
+
+        System.out.println("XD3");
 
         this.placeService.getPlaceById(place.getId())
                 .map(p ->
@@ -44,20 +54,23 @@ public class PlaceImageService {
         this.placeImageRepository.save(placeImage);
         this.placeImageRepository.flush();
 
-        final Long imgId = placeImage.getId();
-
-        File file = new File(imgId + ".jpg");
-
         // todo sprawdz czy jest folder jesli nie to utworz
-        //if(Files.exists())
+        if(Files.notExists(Paths.get("/images/" + place.getId()))) {
+            new File("/images/" + place.getId()).mkdir();
+        }
+
+        final Long imgId = placeImage.getId();
+        File file = new File("/images/" + place.getId() + "/"  +imgId + ".jpg");
 
         try {
             ImageIO.write(ImageIO.read(new ByteArrayInputStream(image)),
                     "jpg", file);
         }catch(IOException ex) {
+            System.out.println(ex);
             throw new IllegalArgumentException(ex);
         }
         // todo logika tworzenia file
+        System.out.println("END");
 
     }
 

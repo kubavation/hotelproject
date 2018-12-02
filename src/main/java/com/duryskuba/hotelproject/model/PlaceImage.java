@@ -25,7 +25,4 @@ public class PlaceImage {
     @JoinColumn(name = "place_id")
     private BasicPlace place;
 
-
-
-
 }
