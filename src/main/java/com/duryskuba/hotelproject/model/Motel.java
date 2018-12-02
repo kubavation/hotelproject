@@ -8,16 +8,14 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.List;
-
+//
 @Entity
-@Table(name = "HOLIDAY_COTTAGE_SITE")
+@Table(name="MOTEL")
 @Getter
 @Setter
 @NoArgsConstructor
-public class HolidayCottageSite extends BasicPlace {
-
+public class Motel extends BasicPlace {
 
     @OneToMany(mappedBy = "place")
-    private List<HolidayCottage> holidayCottages;
-
+    private List<Room> rooms;
 }

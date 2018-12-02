@@ -53,7 +53,11 @@ public class BasicPlace {   // todo abstract??
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "basicPlace")
     private List<PlaceComment> placeComments;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "EQUIPMENT_ID")
-//    private Equipment equipment;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "EQUIPMENT_ID")
+    private Equipment equipment;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "place", fetch = FetchType.LAZY)
+    private List<PlaceImage> images;
 }

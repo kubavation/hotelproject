@@ -2,10 +2,7 @@ package com.duryskuba.hotelproject.service;
 
 import com.duryskuba.hotelproject.exception.AuthException;
 import com.duryskuba.hotelproject.exception.ResourceNotFoundException;
-import com.duryskuba.hotelproject.model.BasicPerson;
-import com.duryskuba.hotelproject.model.BasicPlace;
-import com.duryskuba.hotelproject.model.PlaceAddress;
-import com.duryskuba.hotelproject.model.PlaceComment;
+import com.duryskuba.hotelproject.model.*;
 import com.duryskuba.hotelproject.repository.BasicPlaceRepository;
 import com.duryskuba.hotelproject.repository.PlaceAddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,10 +67,10 @@ public class BasicPlaceService {
         this.basicPlaceRepository.deletePlace(id);
     }
 
-    public void updatePlace(@Valid BasicPlace basicPlace, Long id, Principal principal) {
+    public void updatePlace(@Valid BasicPlace basicPlace, Long id,BasicPerson loggedPerson) {
 
         final Optional<BasicPlace> oldBasicPlace = this.basicPlaceRepository.findById(id);
-        final Optional<BasicPerson> actualUser = this.personService.getPersonByUsername(principal.getName());
+        final Optional<BasicPerson> actualUser = this.personService.getPersonByUsername(loggedPerson.getUsername()); // todo wyjebac?
 
         final PlaceAddress oldPlaceAddress = oldBasicPlace.get().getPlaceAddress();
 
@@ -82,7 +79,7 @@ public class BasicPlaceService {
         this.placeAddressService.createNewAddress(newPlaceAddress);
 
         //place
-        //todo +placeComments ??3
+        //todo +placeComments ??3 + PLACE IMAGES
         basicPlace.setPlaceAddress(newPlaceAddress);
         basicPlace.setId(id);
         basicPlace.setStatus('A');
@@ -106,6 +103,12 @@ public class BasicPlaceService {
         this.basicPlaceRepository.save(basicPlace);
     }
 
+
+    public BasicPlace updateImagesAndSave(BasicPlace place, PlaceImage placeImage) {
+        place.getImages().add(placeImage);
+        this.basicPlaceRepository.save(place);
+        return place;
+    }
 
 
 }
